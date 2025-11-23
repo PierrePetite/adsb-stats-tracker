@@ -475,7 +475,8 @@
     <div id="toast" class="toast"></div>
 
     <script>
-        const API_URL = 'http://localhost:5000/api';
+        // Use current hostname for API access (works for both local and remote)
+        const API_URL = `http://${window.location.hostname}:5000/api`;
 
         // Load all data on page load
         window.onload = function() {
