@@ -594,7 +594,7 @@ def generate_html(s):
                             <td>{flight[6] if flight[6] else '-'}</td>
                             <td>{flight[7] if flight[7] else '-'}</td>
                             <td>{round(flight[8], 1) if flight[8] else '-'}</td>
-                            <td><a href="{TAR1090_PATH}?pTracks&filterCallSign={flight[0].strip()}" target="_blank">View</a></td>
+                            <td><a href="{TAR1090_PATH}/?pTracks&filterCallSign={flight[0].strip()}" target="_blank">View</a></td>
                         </tr>""" for flight in s['all_flights_today']])}
                     </tbody>
                 </table>
@@ -691,7 +691,7 @@ def generate_html(s):
                 const route = (originIata && destIata) ? `${{originIata}} → ${{destIata}}` : '-';
                 const routeTitle = flight[7] && flight[8] ? `${{flight[7]}} → ${{flight[8]}}` : '';
 
-                const tar1090Url = `{TAR1090_PATH}?pTracks&filterCallSign=${{flight[0].trim()}}`;
+                const tar1090Url = `{TAR1090_PATH}/?pTracks&filterCallSign=${{flight[0].trim()}}`;
 
                 html += `<tr>`;
                 html += `<td><a href="${{tar1090Url}}" target="_blank" style="color: #667eea; text-decoration: none;">${{flight[0]}}</a></td>`;
@@ -741,7 +741,7 @@ def generate_html(s):
                 const route = (originIata && destIata) ? `${{originIata}} → ${{destIata}}` : '-';
                 const routeTitle = flight[7] && flight[8] ? `${{flight[7]}} → ${{flight[8]}}` : '';
 
-                const tar1090Url = `{TAR1090_PATH}?pTracks&filterCallSign=${{flight[0].trim()}}`;
+                const tar1090Url = `{TAR1090_PATH}/?pTracks&filterCallSign=${{flight[0].trim()}}`;
 
                 html += `<tr>`;
                 html += `<td><a href="${{tar1090Url}}" target="_blank" style="color: #667eea; text-decoration: none;">${{flight[0]}}</a></td>`;
@@ -807,7 +807,7 @@ def generate_html(s):
                 const route = (originIata && destIata) ? `${{originIata}} → ${{destIata}}` : '-';
                 const routeTitle = flight[7] && flight[8] ? `${{flight[7]}} → ${{flight[8]}}` : '';
 
-                const tar1090Url = `{TAR1090_PATH}?pTracks&filterCallSign=${{flight[0].trim()}}`;
+                const tar1090Url = `{TAR1090_PATH}/?pTracks&filterCallSign=${{flight[0].trim()}}`;
 
                 html += `<tr>`;
                 html += `<td><a href="${{tar1090Url}}" target="_blank" style="color: #667eea; text-decoration: none;">${{flight[0]}}</a></td>`;
