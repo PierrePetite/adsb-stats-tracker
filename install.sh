@@ -119,6 +119,8 @@ install_dependencies() {
     sudo apt install -y \
         python3 \
         python3-pip \
+        python3-flask \
+        python3-flask-cors \
         sqlite3 \
         nginx \
         curl \
@@ -360,12 +362,12 @@ generate_config() {
         readsb_url="http://${READSB_HOST}:${READSB_PORT}${READSB_PATH}"
     fi
 
-    # Build TAR1090_PATH
+    # Build TAR1090_PATH (with trailing slash for query parameters)
     local tar1090_path=""
     if [ "$READSB_MODE" = "remote" ]; then
-        tar1090_path="http://${READSB_HOST}:${READSB_PORT}/tar1090"
+        tar1090_path="http://${READSB_HOST}:${READSB_PORT}/tar1090/"
     else
-        tar1090_path="/tar1090"
+        tar1090_path="/tar1090/"
     fi
 
     cat > "$config_file" << EOF
@@ -490,6 +492,37 @@ setup_webserver() {
     sudo systemctl enable nginx
     sudo systemctl restart nginx
     print_success "Nginx enabled and started"
+}
+
+# Setup alert system
+setup_alerts() {
+    print_step "Setting Up Alert System"
+
+    local script_dir="$(pwd)"
+    local web_dir=$(dirname "$DASHBOARD_OUTPUT_PATH")
+
+    # Copy alerts.html to web directory
+    if [ -f "$script_dir/alerts.html" ]; then
+        cp "$script_dir/alerts.html" "$web_dir/"
+        print_success "Copied alerts.html to $web_dir/"
+    else
+        print_warning "alerts.html not found, skipping..."
+    fi
+
+    # Initialize alert database tables
+    if [ -f "$script_dir/setup_alerts.py" ]; then
+        print_info "Initializing alert system database..."
+        python3 "$script_dir/setup_alerts.py" "$DB_PATH" &>/dev/null
+        print_success "Alert system initialized"
+    else
+        print_warning "setup_alerts.py not found, skipping..."
+    fi
+
+    print_info ""
+    print_info "To use alerts, you need to:"
+    print_info "1. Configure Pushover credentials in the web UI"
+    print_info "2. Start the API server: python3 api.py"
+    print_info "3. Access alerts at: http://YOUR_IP/adsb-stats/alerts.html"
 }
 
 # Setup cron jobs
@@ -627,6 +660,7 @@ main() {
     install_python_deps
     setup_database
     setup_webserver
+    setup_alerts
     setup_cron
 
     if test_installation; then
