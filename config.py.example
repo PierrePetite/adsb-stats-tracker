@@ -1,0 +1,130 @@
+"""
+ADSB Statistics Tracker - Configuration
+Copy this file to config.py and adjust the values for your setup!
+"""
+
+# ============================================
+# BASIC CONFIGURATION
+# ============================================
+
+# Your location/city name (displayed in dashboard header)
+LOCATION_NAME = "Dresden"
+
+# Your latitude and longitude (for potential future features)
+RECEIVER_LAT = 51.103895
+RECEIVER_LON = 13.675288
+
+# ============================================
+# READSB/TAR1090 CONFIGURATION
+# ============================================
+
+# Path to readsb's aircraft.json
+# Default for most installations: /run/readsb/aircraft.json
+# If using dump1090-fa: /run/dump1090-fa/aircraft.json
+AIRCRAFT_JSON_PATH = "/run/readsb/aircraft.json"
+
+# Readsb host (if collecting remotely)
+# Set to IP address if collecting from remote readsb instance
+# Leave as "localhost" for local collection
+READSB_HOST = "localhost"
+
+# ============================================
+# DATABASE CONFIGURATION
+# ============================================
+
+# Database file path
+# This will store all aircraft sightings
+DB_PATH = "/home/YOUR_USER/adsb-stats/adsb.db"
+
+# ============================================
+# WEB SERVER CONFIGURATION
+# ============================================
+
+# Output path for the HTML dashboard
+# Default for nginx/lighttpd: /var/www/html/adsb-stats/index.html
+# Adjust based on your web server configuration
+DASHBOARD_OUTPUT_PATH = "/var/www/html/adsb-stats/index.html"
+
+# Public URL to your ADSB receiver (optional)
+# Used in dashboard footer links
+# Examples:
+#   "https://adsb.yourdomain.com"
+#   "http://192.168.1.100"
+#   None (if you don't want a public link)
+PUBLIC_URL = None
+
+# tar1090 path (for "Live Map" link in footer)
+# Usually /tar1090/ for most installations
+TAR1090_PATH = "/tar1090/"
+
+# ============================================
+# TIMEZONE CONFIGURATION
+# ============================================
+
+# Your local timezone
+# Examples: "Europe/Berlin", "America/New_York", "UTC", "Asia/Tokyo"
+# See: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+TIMEZONE = "Europe/Berlin"
+
+# ============================================
+# STATISTICS CONFIGURATION
+# ============================================
+
+# Number of days to include in "past days" average
+# Default: 7 (last week)
+# If you have less data, it will use all available days
+AVERAGE_DAYS = 7
+
+# Number of days to show in daily flight chart
+# Default: 14 days
+CHART_DAYS = 14
+
+# Number of top airlines/aircraft to show in charts
+# Default: 10
+TOP_N = 10
+
+# Number of top items in rolling 24h charts
+# Default: 7 (to keep charts readable)
+ROLLING_24H_TOP_N = 7
+
+# ============================================
+# ADVANCED CONFIGURATION
+# ============================================
+
+# Minimum altitude to track (in feet)
+# Aircraft below this altitude will be ignored
+# Set to None to track all altitudes
+# Default: None (track everything)
+MIN_ALTITUDE = None
+
+# Maximum range from receiver (in km)
+# Aircraft further than this will be ignored
+# Set to None for unlimited range
+# Default: None (track everything in range)
+MAX_RANGE_KM = None
+
+# Log file paths (optional)
+COLLECT_LOG = "/home/YOUR_USER/adsb-stats/collect.log"
+DASHBOARD_LOG = "/home/YOUR_USER/adsb-stats/dashboard.log"
+
+# ============================================
+# DASHBOARD CUSTOMIZATION
+# ============================================
+
+# Dashboard title
+# Default: "✈️ ADSB Statistics {LOCATION_NAME}"
+DASHBOARD_TITLE = f"✈️ ADSB Statistics {LOCATION_NAME}"
+
+# Dashboard subtitle
+# Default: "Flugzeug-Tracking • Aktualisiert: {timestamp}"
+# Set to None to use default
+DASHBOARD_SUBTITLE = None
+
+# Color scheme (hex colors for charts)
+# Default: Purple/Blue gradient
+PRIMARY_COLOR = "#667eea"
+SECONDARY_COLOR = "#764ba2"
+
+# Background gradient
+BACKGROUND_GRADIENT_START = "#667eea"
+BACKGROUND_GRADIENT_END = "#764ba2"

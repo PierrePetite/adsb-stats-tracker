@@ -1,0 +1,13 @@
+# ADSB Stats Tracker - Python Dependencies
+
+# Web Framework for API
+flask==3.0.0
+flask-cors==4.0.0
+
+# HTTP Requests for Pushover
+requests==2.31.0
+
+# Already included in Python 3
+# sqlite3 (built-in)
+# json (built-in)
+# datetime (built-in)

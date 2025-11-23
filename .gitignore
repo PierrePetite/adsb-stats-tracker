@@ -1,0 +1,33 @@
+# Database files
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Log files
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Configuration (user-specific)
+config.py
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+config_remote_test.py
