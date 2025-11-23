@@ -251,6 +251,18 @@ def get_stats():
 
         aircraft_hourly_24h[aircraft_type] = [hour_counts.get(h, 0) for h in hours_24h]
 
+    # System statistics
+    import os
+    db_size_bytes = os.path.getsize(DB_PATH) if os.path.exists(DB_PATH) else 0
+    db_size_mb = round(db_size_bytes / (1024 * 1024), 2)
+
+    # First and last data dates
+    first_date = cur.execute("SELECT MIN(date) FROM aircraft_sightings").fetchone()[0]
+    last_date = cur.execute("SELECT MAX(date) FROM aircraft_sightings").fetchone()[0]
+
+    # Route cache stats
+    cached_routes = cur.execute("SELECT COUNT(*) FROM route_cache WHERE api_success=1").fetchone()[0]
+
     conn.close()
 
     return {
@@ -274,7 +286,11 @@ def get_stats():
         'hours_24h': hours_24h,
         'airlines_hourly_24h': airlines_hourly_24h,
         'aircraft_hourly_24h': aircraft_hourly_24h,
-        'updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        'updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'db_size_mb': db_size_mb,
+        'first_date': first_date,
+        'last_date': last_date,
+        'cached_routes': cached_routes
     }
 
 def generate_html(s):
@@ -586,7 +602,15 @@ def generate_html(s):
         </div>
 
         <div class="footer">
-            📡 ADSB Receiver {LOCATION_NAME} • <a href="{TAR1090_PATH}">Live Map</a>{' • <a href="' + PUBLIC_URL + '">Public Access</a>' if PUBLIC_URL else ''}
+            <div style="margin-bottom: 10px;">
+                📡 ADSB Receiver {LOCATION_NAME} • <a href="{TAR1090_PATH}">Live Map</a>{' • <a href="' + PUBLIC_URL + '">Public Access</a>' if PUBLIC_URL else ''}
+            </div>
+            <div style="font-size: 0.85em; opacity: 0.8; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px;">
+                💾 Database: {s['db_size_mb']} MB •
+                ✈️ Total Flights: {s['total_all']:,} •
+                📅 Data since: {s['first_date'] or 'N/A'} ({s['days']} days) •
+                🗺️ Cached Routes: {s['cached_routes']:,}
+            </div>
         </div>
     </div>
 

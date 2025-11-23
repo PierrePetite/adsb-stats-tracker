@@ -332,17 +332,25 @@ MIT License - see [LICENSE](LICENSE) file
 
 ## 📸 Screenshots
 
-### Main Dashboard
-Beautiful, responsive dashboard with real-time statistics
+### Dashboard Overview
+Beautiful, responsive dashboard with real-time statistics, hourly traffic analysis, and top airlines/aircraft charts.
 
-### Hourly Analysis
-Compare today's traffic with historical averages
+![Dashboard Overview](screenshots/stats_overview.png)
 
-### Top Airlines & Aircraft
-Interactive charts and detailed flight lists
+### Top Airlines & Flight Distribution
+Interactive charts showing airline distribution with detailed flight lists and modals.
 
-### Route Tracking
-Automatic route lookup with origin/destination airports
+![Airlines Analysis](screenshots/stats_flighterperairline.png)
+
+### Aircraft Types & Popular Airports
+Most common aircraft types and frequently visited airports with route information.
+
+![Aircraft & Airports](screenshots/stats_aircrafts_popular_airports.png)
+
+### All Flights Table & System Stats
+Searchable flight table with all flights, routes, and system statistics in the footer.
+
+![All Flights & Stats](screenshots/stats_allflights_host_stats.png)
 
 ---
 
