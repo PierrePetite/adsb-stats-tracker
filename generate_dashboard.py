@@ -480,7 +480,7 @@ def generate_html(s):
         <h1>✈️ ADSB Statistics {LOCATION_NAME}</h1>
         <div class="subtitle">Aircraft Tracking • Updated: {s['updated']}</div>
         <div class="nav-links">
-            <a href="/tar1090/">🗺️ Live Map</a>
+            <a href="{TAR1090_PATH}">🗺️ Live Map</a>
             <a href="alerts.html">🚨 Alert Management</a>
         </div>
 
