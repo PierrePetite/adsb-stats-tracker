@@ -37,10 +37,25 @@ os.environ['TZ'] = TIMEZONE
 DB = DB_PATH
 OUTPUT = DASHBOARD_OUTPUT_PATH
 
-def get_stats():
+def get_stats(date=None):
+    """
+    Get statistics for a specific date.
+
+    Args:
+        date (str, optional): Date in YYYY-MM-DD format. Defaults to today.
+
+    Returns:
+        dict: Statistics dictionary
+    """
     conn = sqlite3.connect(DB)
     cur = conn.cursor()
-    today = datetime.now().strftime('%Y-%m-%d')
+
+    # Use provided date or default to today
+    if date:
+        today = date
+    else:
+        today = datetime.now().strftime('%Y-%m-%d')
+
     week_ago = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
 
     total_today = cur.execute("SELECT COUNT(*) FROM aircraft_sightings WHERE date=?", (today,)).fetchone()[0]
@@ -266,6 +281,7 @@ def get_stats():
     conn.close()
 
     return {
+        'selected_date': today,  # The date being viewed
         'total_today': total_today,
         'total_all': total_all,
         'avg_per_day': round(avg_per_day, 1),
@@ -478,7 +494,12 @@ def generate_html(s):
 <body>
     <div class="container">
         <h1>✈️ ADSB Statistics {LOCATION_NAME}</h1>
-        <div class="subtitle">Aircraft Tracking • Updated: {s['updated']}</div>
+        <div class="subtitle">
+            Aircraft Tracking • Updated: {s['updated']} •
+            <select id="dateSelector" onchange="loadDateDashboard(this.value)" style="padding: 5px 10px; border-radius: 5px; border: 1px solid #ddd; background: white; cursor: pointer;">
+                <option value="">Loading dates...</option>
+            </select>
+        </div>
         <div class="nav-links">
             <a href="{TAR1090_PATH}">🗺️ Live Map</a>
             <a href="alerts.html">🚨 Alert Management</a>
@@ -879,6 +900,58 @@ def generate_html(s):
 
     // Charts
     {charts}
+
+    // ============================================================================
+    // DATE SELECTOR
+    // ============================================================================
+
+    // Get API URL (use current hostname for remote access)
+    const DASHBOARD_API_URL = `http://${{window.location.hostname}}:5000/api`;
+
+    // Load available dates
+    async function loadAvailableDates() {{
+        try {{
+            const response = await fetch(`${{DASHBOARD_API_URL}}/dates`);
+            const dates = await response.json();
+
+            const selector = document.getElementById('dateSelector');
+            selector.innerHTML = '';
+
+            // Add dates to dropdown (most recent first)
+            dates.forEach(date => {{
+                const option = document.createElement('option');
+                option.value = date;
+                option.textContent = date;
+
+                // Select current date
+                if (date === '{s['selected_date']}') {{
+                    option.selected = true;
+                }}
+
+                selector.appendChild(option);
+            }});
+        }} catch (error) {{
+            console.error('Error loading dates:', error);
+            document.getElementById('dateSelector').innerHTML = '<option>Error loading dates</option>';
+        }}
+    }}
+
+    // Load dashboard for selected date
+    function loadDateDashboard(selectedDate) {{
+        if (!selectedDate) return;
+
+        // Reload page with date parameter via API
+        window.location.href = `${{DASHBOARD_API_URL}}/dashboard?date=${{selectedDate}}`;
+    }}
+
+    // Load dates after page is fully loaded
+    if (document.readyState === 'loading') {{
+        document.addEventListener('DOMContentLoaded', loadAvailableDates);
+    }} else {{
+        // DOM already loaded
+        loadAvailableDates();
+    }}
+
     </script>
 </body>
 </html>'''

@@ -302,6 +302,43 @@ def get_live_aircraft():
     return jsonify([dict(a) for a in aircraft])
 
 # ============================================================================
+# DASHBOARD ENDPOINTS (for date selection)
+# ============================================================================
+
+@app.route('/api/dates', methods=['GET'])
+def get_available_dates():
+    """Get all available dates from the database"""
+    conn = get_db()
+    cur = conn.cursor()
+
+    dates = cur.execute("""
+        SELECT DISTINCT date
+        FROM aircraft_sightings
+        ORDER BY date DESC
+    """).fetchall()
+
+    conn.close()
+
+    return jsonify([d['date'] for d in dates])
+
+@app.route('/api/dashboard', methods=['GET'])
+def get_dashboard():
+    """Generate dashboard HTML for a specific date"""
+    from generate_dashboard import get_stats, generate_html
+
+    # Get date parameter (default: today)
+    selected_date = request.args.get('date', None)
+
+    try:
+        # Generate stats for the selected date
+        stats = get_stats(date=selected_date)
+        html = generate_html(stats)
+
+        return html, 200, {'Content-Type': 'text/html; charset=utf-8'}
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# ============================================================================
 # MAIN
 # ============================================================================
 
