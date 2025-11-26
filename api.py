@@ -339,6 +339,80 @@ def get_dashboard():
         return jsonify({'error': str(e)}), 500
 
 # ============================================================================
+# AIRCRAFT ENHANCED ENDPOINT (for tvOS/iOS apps)
+# ============================================================================
+
+@app.route('/api/aircraft-enhanced.json', methods=['GET'])
+def get_aircraft_enhanced():
+    """
+    Enhanced aircraft.json with position history for track visualization
+
+    Combines live aircraft.json from readsb with position history from our DB
+    Format compatible with aircraft.json but adds 'track_history' field
+
+    Usage: tvOS/iOS apps can use this instead of direct aircraft.json
+    """
+    import requests
+
+    try:
+        # Import config for readsb URL
+        from config import READSB_URL, READSB_MODE, AIRCRAFT_JSON_PATH
+
+        # Fetch current aircraft.json from readsb
+        if READSB_MODE == "remote":
+            response = requests.get(READSB_URL, timeout=5)
+            response.raise_for_status()
+            aircraft_data = response.json()
+        else:
+            # Local mode - read from file
+            import json
+            with open(AIRCRAFT_JSON_PATH, 'r') as f:
+                aircraft_data = json.load(f)
+
+        conn = get_db()
+        cur = conn.cursor()
+
+        # For each aircraft: Add position history
+        for aircraft in aircraft_data.get('aircraft', []):
+            callsign = aircraft.get('flight', '').strip()
+
+            if callsign:
+                # Get last 50 positions from position_history (last 2 hours max)
+                history = cur.execute("""
+                    SELECT lat, lon, altitude, track, ground_speed, timestamp
+                    FROM position_history
+                    WHERE callsign = ?
+                    AND timestamp >= datetime('now', '-2 hours')
+                    ORDER BY timestamp ASC
+                    LIMIT 50
+                """, (callsign,)).fetchall()
+
+                # Add track_history to aircraft object
+                if history:
+                    aircraft['track_history'] = [
+                        {
+                            'lat': h[0],
+                            'lon': h[1],
+                            'alt': h[2],
+                            'track': h[3],
+                            'gs': h[4],
+                            'time': h[5]
+                        }
+                        for h in history
+                    ]
+
+        conn.close()
+
+        # Return enhanced aircraft.json
+        return jsonify(aircraft_data)
+
+    except Exception as e:
+        return jsonify({
+            'error': str(e),
+            'message': 'Failed to fetch enhanced aircraft data'
+        }), 500
+
+# ============================================================================
 # MAIN
 # ============================================================================
 

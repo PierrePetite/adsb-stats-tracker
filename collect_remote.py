@@ -149,7 +149,28 @@ def collect_data():
                 squawk = excluded.squawk
         """, (today, icao_hex, callsign, airline, aircraft_type, now, now, altitude, altitude, distance_nm, squawk))
 
+        # Store position history for track visualization
+        cur.execute("""
+            INSERT INTO position_history
+            (callsign, icao_hex, lat, lon, altitude, track, ground_speed)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (
+            callsign,
+            icao_hex,
+            aircraft.get('lat'),
+            aircraft.get('lon'),
+            altitude,
+            aircraft.get('track'),
+            aircraft.get('gs')
+        ))
+
         collected += 1
+
+    # Cleanup old position history (keep only last 2 hours)
+    cur.execute("""
+        DELETE FROM position_history
+        WHERE timestamp < datetime('now', '-2 hours')
+    """)
 
     conn.commit()
     conn.close()
